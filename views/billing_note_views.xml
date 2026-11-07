@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sequence for Billing Note -->
+    <record id="seq_customer_billing_note" model="ir.sequence">
+        <field name="name">Customer Billing Note Sequence</field>
+        <field name="code">customer.billing.note</field>
+        <field name="prefix">BN/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_customer_billing_note_form" model="ir.ui.view">
+        <field name="name">customer.billing.note.form</field>
+        <field name="model">customer.billing.note</field>
+        <field name="arch" type="xml">
+            <form string="Billing Note">
+                <header>
+                    <button name="action_send" string="Mark as Sent" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_set_to_draft" string="Reset to Draft" type="object" invisible="state not in ('sent', 'cancel')"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('paid', 'cancel')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="due_date" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Invoices" name="invoices">
+                            <field name="invoice_ids" readonly="state != 'draft'">
+                                <list string="Invoices">
+                                    <field name="name"/>
+                                    <field name="invoice_date"/>
+                                    <field name="invoice_date_due"/>
+                                    <field name="amount_total" sum="Total"/>
+                                    <field name="amount_residual" sum="Total Due"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="total_amount"/>
+                                <field name="amount_residual" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Terms &amp; Notes" name="notes">
+                            <field name="note" placeholder="Add payment terms or instructions for the customer..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_customer_billing_note_tree" model="ir.ui.view">
+        <field name="name">customer.billing.note.list</field>
+        <field name="model">customer.billing.note</field>
+        <field name="arch" type="xml">
+            <list string="Billing Notes">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="due_date"/>
+                <field name="total_amount" sum="Total"/>
+                <field name="amount_residual" sum="Total Due"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_customer_billing_note" model="ir.actions.act_window">
+        <field name="name">Billing Notes</field>
+        <field name="res_model">customer.billing.note</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Customer Billing Note!
+            </p>
+            <p>
+                Group multiple unpaid customer invoices into a single billing document for your clients.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menuitem in Invoicing -->
+    <menuitem id="menu_customer_billing_note"
+              name="Billing Notes"
+              parent="account.menu_finance_receivables"
+              action="action_customer_billing_note"
+              sequence="15"/>
+</odoo>

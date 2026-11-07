@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_customer_billing_note_user,customer.billing.note.user,model_customer_billing_note,account.group_account_invoice,1,1,1,1
+access_customer_billing_note_manager,customer.billing.note.manager,model_customer_billing_note,account.group_account_manager,1,1,1,1
